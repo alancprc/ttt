@@ -1,6 +1,7 @@
 ---
 layout: post
-title: test markdown
+title: "test markdown"
+categories: test
 ---
 
 __hello world!__
