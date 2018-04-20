@@ -20,7 +20,7 @@ email: alancprc@gmail.com
   #Google search results) and in your feed.xml site description.
 description: >- # this means to ignore newlines until "baseurl:"
     a place to write down some pieces.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/article" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 #twitter_username: jekyllrb
 #github_username:  jekyll
