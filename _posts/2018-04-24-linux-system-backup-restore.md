@@ -60,7 +60,7 @@ then update grub.cfg and fstab
 
 2. backup uuid of partitions on old disk,  
 then set the old uuid back to each corresponding new partition by:  
-`tune2fs /dev/sdXn -U *uuid*`
+`tune2fs /dev/sdXn -U uuid`
 
 
 
