@@ -5,8 +5,7 @@ categories: linux
 ---
 
 
-system info:
-============
+# system info:
 OS:     CentOS 7.2  
 VNC:    tiger vnc server  
 DE:     Gnome 3  
@@ -23,5 +22,19 @@ later I searched the web and found many post there saying vnc with gnome-session
 with original ~/.vnc/xstartup, it actually starts a gnome-session, which is the default DE on my CentOS 7 system.
 So i modified xstartup to start kde with `startkde &` and a kde session was started successfully on vnc.
 
-![pic-xstartup-old]({{ site.baseurl }}/pic/xstartup-old.png)
-![pic-xstartup-new]({{ site.baseurl }}/pic/xstartup-new.png)
+```
+#!/bin/sh
+
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+exec /etc/X11/xinit/xinitrc
+```
+
+```
+#!/bin/sh
+
+unset SESSION_MANAGER
+unset DBUS_SESSION_BUS_ADDRESS
+#exec /etc/X11/xinit/xinitrc
+startkde &
+```
