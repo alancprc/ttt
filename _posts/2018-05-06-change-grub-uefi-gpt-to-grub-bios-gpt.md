@@ -60,7 +60,8 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 1. 改ESP分区为BIOS 启动分区，可用fdisk/parted等
-- 修改之前：  
+- 修改之前:
+
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -73,7 +74,8 @@ Number  Start   End     Size    File system  Name                  Flags
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
-- 修改之后：
+
+- 修改之后:
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
