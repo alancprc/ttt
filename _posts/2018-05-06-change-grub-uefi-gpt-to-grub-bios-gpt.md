@@ -60,7 +60,7 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 1. 改ESP分区为BIOS 启动分区，可用fdisk/parted等
-修改之前：  
+- 修改之前：  
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -73,7 +73,7 @@ Number  Start   End     Size    File system  Name                  Flags
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
-修改之后：
+- 修改之后：
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -87,7 +87,7 @@ Number  Start   End     Size    File system  Name  Flags
  3      1050MB  66.6GB  65.5GB                     lvm
 ```
 
-1. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
+2. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
 ```
 # /etc/fstab
 # Created by anaconda on Thu May  3 15:53:56 2018
@@ -102,13 +102,13 @@ UUID=ae36de86-3ee1-4e0f-9d1f-11d0e190c832 /boot                   ext4    defaul
 /dev/mapper/centos7-swap swap                    swap    defaults        0 0
 ```
 
-1. 重新安装grub
+3. 重新安装grub
 ```
 yum install grub2-pc
 grub2-install  --target=i386-pc /dev/sda
 ```
 
-1. 重新生成/boot/grub2/grub.cfg
+4. 重新生成/boot/grub2/grub.cfg
 ```
 grub2-mkconfig  -o /boot/grub2/grub.cfg
 ```
@@ -169,7 +169,7 @@ dracut -f /boot/initramfs-3.10.0-327.el7.x86_64.img 3.10.0-327.el7.x86_64
 ## references:
 1. Archlinux wiki: GRUB
 [https://wiki.archlinux.org/index.php/GRUB](https://wiki.archlinux.org/index.php/GRUB)
-1. sys cook book: RHEL: Rebuilding the initial ramdisk image
+2. sys cook book: RHEL: Rebuilding the initial ramdisk image
 [https://sites.google.com/site/syscookbook/rhel/rhel-kernel-rebuild](https://sites.google.com/site/syscookbook/rhel/rhel-kernel-rebuild)
-1. grub online manual
+3. grub online manual
 [https://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation](https://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation)
