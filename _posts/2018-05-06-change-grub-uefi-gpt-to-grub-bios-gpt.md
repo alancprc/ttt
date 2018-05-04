@@ -35,7 +35,6 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
         kernelefi /vmlinuz-2.6.32-220.el6.x86_64 ro root=UUID=0ffb7b13-c89f-4759-8af0-083a35c4a879 nomodeset rd_NO_LUKS KEYBOARDTYPE=pc KEYTABLE=us LANG=en_US.UTF-8 rd_NO_MD quiet SYSFONT=latarcyrheb-sun16 rhgb rd_NO_LVM rd_NO_DM
         initrdefi /initramfs-2.6.32-220.el6.x86_64.img
 }
-
 ```
 
 而`linuxefi`会提示`kernel too old`，不能引导。  
@@ -60,7 +59,6 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 1. 改ESP分区为BIOS 启动分区，可用fdisk/parted等
-
 修改之前：
 ```
 Model: ATA VBOX HARDDISK (scsi)
@@ -74,7 +72,6 @@ Number  Start   End     Size    File system  Name                  Flags
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
-
 修改之后：
 ```
 Model: ATA VBOX HARDDISK (scsi)
@@ -164,7 +161,6 @@ dracut -f
 如果以 rescue mode 启动，需要指定kernel版本
 ```
 dracut -f /boot/initramfs-3.10.0-327.el7.x86_64.img 3.10.0-327.el7.x86_64
-
 ```
 重启后正常启动。
 
