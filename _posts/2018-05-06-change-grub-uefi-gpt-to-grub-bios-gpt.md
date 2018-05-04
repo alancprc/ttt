@@ -1,5 +1,6 @@
 ---
 layout: post
+title:  change grub-uefi-gpt to grub-bios-gpt
 categories: linux
 ---
 
@@ -59,7 +60,7 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 1. 改ESP分区为BIOS 启动分区，可用fdisk/parted等
-修改之前：
+修改之前：  
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
