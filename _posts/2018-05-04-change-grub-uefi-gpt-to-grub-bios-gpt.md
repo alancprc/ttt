@@ -59,37 +59,36 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
-1. 改ESP分区为BIOS 启动分区，可用fdisk/parted等
-- 修改之前:
 
+1. check disk partition info
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
 Sector size (logical/physical): 512B/512B
 Partition Table: gpt
 Disk Flags: 
-
+'  
 Number  Start   End     Size    File system  Name                  Flags
  1      1049kB  525MB   524MB   fat16        EFI System Partition  boot
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
 
-- 修改之后:
+2. 改ESP分区为BIOS 启动分区，可用fdisk/parted等。修改后如下:
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
 Sector size (logical/physical): 512B/512B
 Partition Table: gpt
 Disk Flags: 
-
+'
 Number  Start   End     Size    File system  Name  Flags
  1      17.4kB  1049kB  1031kB                     bios_grub
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                     lvm
 ```
 
-2. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
+3. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
 ```
 # /etc/fstab
 # Created by anaconda on Thu May  3 15:53:56 2018
@@ -104,13 +103,13 @@ UUID=ae36de86-3ee1-4e0f-9d1f-11d0e190c832 /boot                   ext4    defaul
 /dev/mapper/centos7-swap swap                    swap    defaults        0 0
 ```
 
-3. 重新安装grub
+4. 重新安装grub
 ```
 yum install grub2-pc
 grub2-install  --target=i386-pc /dev/sda
 ```
 
-4. 重新生成/boot/grub2/grub.cfg
+5. 重新生成/boot/grub2/grub.cfg
 ```
 grub2-mkconfig  -o /boot/grub2/grub.cfg
 ```
@@ -152,6 +151,9 @@ menuentry 'CentOS Linux (0-rescue-cb7527f57967497db1ab0053cd791a95) 7 (Core)' --
 	linux16 /vmlinuz-0-rescue-cb7527f57967497db1ab0053cd791a95 root=/dev/mapper/centos7-root ro rd.lvm.lv=centos7/root rd.lvm.lv=centos7/swap rhgb quiet 
 	initrd16 /initramfs-0-rescue-cb7527f57967497db1ab0053cd791a95.img
 }
+
+
+
 
 ### END /etc/grub.d/10_linux ###
 ```
