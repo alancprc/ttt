@@ -1,6 +1,6 @@
 ---
-layout: post
-title:  change grub-uefi-gpt to grub-bios-gpt
+layout:     post
+title:      从GRUB-UEFI-GPT转成GRUB-BIOS-GPT
 categories: linux
 ---
 
@@ -11,11 +11,11 @@ categories: linux
 ## 系统信息
 - hdd1:
     - CentOS 6
-    - grub legacy 0.97
+    - GRUB legacy 0.97
     - MRR
 - hdd2:
     - CentOS 7
-    - grub2
+    - GRUB2
     - GPT，有单独EFI分区
 
 ## 走过的弯路
@@ -45,22 +45,23 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 ### 备份-重新安装成BIOS+MBR/GPT模式-还原
 肯定能解决，但是动作有点大，时间也比较长，先不考虑。
 
-## 解决方案
-冷静下来，细细想一下我们的现状和目标。  
-两块硬盘上，分别是GRUB+BIOS+MBR/GRUB+UEFI+GPT。要实现一个GRUB引导两个系统。  
+## 解决方案: GRUB+UEFI+GPT转成GRUB+BIOS+GPT
+冷静下来，想一下我们的现状和目标。  
+两块硬盘上，分别是GRUB+BIOS+MBR/GRUB+UEFI+GPT启动。要实现一个GRUB引导两个系统。  
 如果有办法能把GRUB+UEFI+GPT变成GRUB+BIOS+GPT，似乎就能达到我们的目标了。
 
 先看一下GRUB+BIOS+GPT和GRUB+UEFI+GPT区别：
 - BIOS+GRUB+GPT:
     - 需要一个[BIOS 启动分区](https://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation)
-    - 建立BIOS启动分区的方式参见 [arch wiki](https://wiki.archlinux.org/index.php/GRUB#GUID_Partition_Table_.28GPT.29_specific_instructions)
 - UEFI+GRUB+GPT:
     - 需要一个`ESP`(EFI System Partition)分区。[EFI System Partition](https://wiki.archlinux.org/index.php/GRUB#Check_for_an_EFI_System_Partition)
 
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 
-1. check disk partition info
+1. 把ESP分区改为BIOS 启动分区，参见 [arch wiki](https://wiki.archlinux.org/index.php/GRUB#GUID_Partition_Table_.28GPT.29_specific_instructions)
+修改前后如下:
+
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -74,7 +75,6 @@ Number  Start   End     Size    File system  Name                  Flags
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
 
-2. 改ESP分区为BIOS 启动分区，可用fdisk/parted等。修改后如下:
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -88,7 +88,8 @@ Number  Start   End     Size    File system  Name  Flags
  3      1050MB  66.6GB  65.5GB                     lvm
 ```
 
-3. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
+2. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
+
 ```
 # /etc/fstab
 # Created by anaconda on Thu May  3 15:53:56 2018
@@ -103,23 +104,26 @@ UUID=ae36de86-3ee1-4e0f-9d1f-11d0e190c832 /boot                   ext4    defaul
 /dev/mapper/centos7-swap swap                    swap    defaults        0 0
 ```
 
-4. 重新安装grub
+3. 重新安装grub
+
 ```
 yum install grub2-pc
 grub2-install  --target=i386-pc /dev/sda
 ```
 
-5. 重新生成/boot/grub2/grub.cfg
+4. 重新生成/boot/grub2/grub.cfg
+
 ```
 grub2-mkconfig  -o /boot/grub2/grub.cfg
 ```
 **注意**：
 - 安装grub时可能有warning，需要删除原先的symlink `rm /boot/grub2/grubenv`
-- 重新生成的grub.cfg可能仍然使用linuxefi/initrdefi命令，重启时会提示linuxefi command not found。需要修改为linux16/initrd16。
+- 重新生成的grub.cfg可能仍然使用`linuxefi`/`initrdefi`命令，重启时会提示`linuxefi command not found`。需要修改为`linux16`/`initrd16`。
 
 ## 等等，还有最后一步
 上面做下来，重启后发现进入emergency mode，看log发现和boot-efi相关，显示还有些内容需要改动。
 但是 rescue mode 正常启动，于是查看grub.cfg中两者的差别：
+
 ```
 ### BEGIN /etc/grub.d/10_linux ###
 menuentry 'CentOS Linux (3.10.0-327.el7.x86_64) 7 (Core)' --class centos --class gnu-linux --class gnu --class os --unrestricted $menuentry_id_option 'gnulinux-3.10.0-327.el7.x86_64-advanced-65a46f15-8b6f-430d-9a5b-6803e18b5acb' {
@@ -152,9 +156,6 @@ menuentry 'CentOS Linux (0-rescue-cb7527f57967497db1ab0053cd791a95) 7 (Core)' --
 	initrd16 /initramfs-0-rescue-cb7527f57967497db1ab0053cd791a95.img
 }
 
-
-
-
 ### END /etc/grub.d/10_linux ###
 ```
 
@@ -171,9 +172,9 @@ dracut -f /boot/initramfs-3.10.0-327.el7.x86_64.img 3.10.0-327.el7.x86_64
 
 
 ## references:
-1. Archlinux wiki: GRUB
+1. Archlinux wiki: GRUB  
 [https://wiki.archlinux.org/index.php/GRUB](https://wiki.archlinux.org/index.php/GRUB)
-2. sys cook book: RHEL: Rebuilding the initial ramdisk image
+2. sys cook book: RHEL: Rebuilding the initial ramdisk image  
 [https://sites.google.com/site/syscookbook/rhel/rhel-kernel-rebuild](https://sites.google.com/site/syscookbook/rhel/rhel-kernel-rebuild)
-3. grub online manual
+3. grub online manual  
 [https://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation](https://www.gnu.org/software/grub/manual/grub/html_node/BIOS-installation.html#BIOS-installation)
