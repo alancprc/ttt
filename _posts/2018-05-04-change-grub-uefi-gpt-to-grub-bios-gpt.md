@@ -61,7 +61,6 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 
 1. 把ESP分区改为BIOS 启动分区，参见 [arch wiki](https://wiki.archlinux.org/index.php/GRUB#GUID_Partition_Table_.28GPT.29_specific_instructions)
 修改前后如下:
-
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -89,7 +88,6 @@ Number  Start   End     Size    File system  Name  Flags
 ```
 
 2. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
-
 ```
 # /etc/fstab
 # Created by anaconda on Thu May  3 15:53:56 2018
@@ -105,14 +103,12 @@ UUID=ae36de86-3ee1-4e0f-9d1f-11d0e190c832 /boot                   ext4    defaul
 ```
 
 3. 重新安装grub
-
 ```
 yum install grub2-pc
 grub2-install  --target=i386-pc /dev/sda
 ```
 
 4. 重新生成/boot/grub2/grub.cfg
-
 ```
 grub2-mkconfig  -o /boot/grub2/grub.cfg
 ```
