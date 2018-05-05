@@ -73,7 +73,6 @@ Number  Start   End     Size    File system  Name                  Flags
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
-
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
