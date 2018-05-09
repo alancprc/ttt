@@ -4,6 +4,9 @@ title:      从GRUB-UEFI-GPT转成GRUB-BIOS-GPT
 categories: linux
 ---
 
+* 目录
+{:toc}
+
 ## 问题来源
 上次提到在单位的工作站上的空闲硬盘上，安装了一个CentOS 7系统。但不完美的地方在于，安装的时候没有考虑到双系统启动，导致安装完成之后，在第一块硬盘上的CentOS 6和第二块硬盘的CentOS 7之前切换的时候，必须进入BIOS设置启动顺序，颇为麻烦。
 于是想着如何用一个grub引导两个系统。
@@ -19,9 +22,9 @@ categories: linux
     - GPT，有单独EFI分区
 
 ## 走过的弯路
-### 首先想到的是os-prober
-自然，利用os-prober直接生成CentOS 6的菜单。
-但是grub2-mkconfig生成的grub.cfg中，CentOS 6的菜单，是用linuxefi/initrdefi 加载kernel和initramfs，如下：
+### 直接利用os-prober添加CentOS 6启动菜单
+首先想到的是，利用os-prober直接生成CentOS 6的菜单。
+但是，因为grub2是以uefi的模式安装的，grub2-mkconfig生成的CentOS 6的菜单，是用linuxefi/initrdefi 加载kernel和initramfs，如下：
 
 ```
 menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $menuentry_id_option 'osprober-gnulinux-simple-0ffb7b13-c89f-4759-8af0-083a35c4a879' {
@@ -40,7 +43,7 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 
 而`linuxefi`会提示`kernel too old`，不能引导。  
 将`linuxefi`改成`linux`、`linux16`呢？`command not found`
-所以，os-prober看来行不通
+所以，UEFI grub2 无法引导BIOS grub，直接os-prober看来行不通
 
 ### 备份-重新安装成BIOS+MBR/GPT模式-还原
 肯定能解决，但是动作有点大，时间也比较长，先不考虑。
@@ -59,8 +62,8 @@ menuentry 'CentOS release 6.2 test' --class gnu-linux --class gnu --class os $me
 所以把`ESP`分区变成`BIOS 启动分区`，然后重新以BIOS方式安装GRUB，应该就可以。
 
 
-1. 把ESP分区改为BIOS 启动分区，参见 [arch wiki](https://wiki.archlinux.org/index.php/GRUB#GUID_Partition_Table_.28GPT.29_specific_instructions)
-修改前后如下:
+### 把ESP分区改为BIOS 启动分区，参见 [arch wiki](https://wiki.archlinux.org/index.php/GRUB#GUID_Partition_Table_.28GPT.29_specific_instructions)
+修改前:
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -73,6 +76,8 @@ Number  Start   End     Size    File system  Name                  Flags
  2      525MB   1050MB  524MB   ext4
  3      1050MB  66.6GB  65.5GB                                     lvm
 ```
+
+修改后:
 ```
 Model: ATA VBOX HARDDISK (scsi)
 Disk /dev/sda: 107GB
@@ -86,7 +91,7 @@ Number  Start   End     Size    File system  Name  Flags
  3      1050MB  66.6GB  65.5GB                     lvm
 ```
 
-2. 更新/etf/fstab文件，注释掉包含/boot/efi的一行
+### 更新/etf/fstab文件，注释掉包含/boot/efi的一行
 ```
 # /etc/fstab
 # Created by anaconda on Thu May  3 15:53:56 2018
@@ -101,13 +106,13 @@ UUID=ae36de86-3ee1-4e0f-9d1f-11d0e190c832 /boot                   ext4    defaul
 /dev/mapper/centos7-swap swap                    swap    defaults        0 0
 ```
 
-3. 重新安装grub
+### 重新安装grub
 ```
 yum install grub2-pc
 grub2-install  --target=i386-pc /dev/sda
 ```
 
-4. 重新生成/boot/grub2/grub.cfg
+### 重新生成/boot/grub2/grub.cfg
 ```
 grub2-mkconfig  -o /boot/grub2/grub.cfg
 ```
@@ -115,7 +120,7 @@ grub2-mkconfig  -o /boot/grub2/grub.cfg
 - 安装grub时可能有warning，需要删除原先的symlink `rm /boot/grub2/grubenv`
 - 重新生成的grub.cfg可能仍然使用`linuxefi`/`initrdefi`命令，重启时会提示`linuxefi command not found`。需要修改为`linux16`/`initrd16`。
 
-## 等等，还有最后一步
+### 等等，还有最后一步
 上面做下来，重启后发现进入emergency mode，看log发现和boot-efi相关，显示还有些内容需要改动。
 但是 rescue mode 正常启动，于是查看grub.cfg中两者的差别：
 
