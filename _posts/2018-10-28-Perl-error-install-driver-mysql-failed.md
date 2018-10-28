@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Perl error: install_driver(mysql) failed
+title:      Perl error: install driver(mysql) failed
 categories: Perl
 ---
 
