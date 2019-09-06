@@ -28,4 +28,4 @@ sameports bug 链接：
 [the option --nataliasmode1 sameports is not honoured -> fixed in 5.2.18](https://www.virtualbox.org/ticket/13000)
 
 VirtualBox文档：
-[NAT Networking settings]({{ site.baseurl }}/pic/virtualbox-nat-network-settings.png)
+![NAT Networking settings]({{ site.baseurl }}/pic/virtualbox-nat-network-settings.png)
