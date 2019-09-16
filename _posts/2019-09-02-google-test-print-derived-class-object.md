@@ -7,21 +7,7 @@ categories: c++
 在Unison中使用google test时，发现EXPECT_EQ在fail时，不能打印Unison Test Language中定义的派生类的对象。于是写了个纯C++的示例，发现在只定义基类的`operator<<`时，无法打印派生类对象。
 
 于是在github上给googletest提交了一个issue[Unable to print derived class while `operator<<` for base class defined #2435](https://github.com/google/googletest/issues/2435)。
-内容如下：
-
-I'm new to use google test and not sure it's a problem with google test or the
-way I use it.
-
-`class D` is derived from `class B`, and `operator<<` for `class B` is defined.
-with this, `std::cout` is able to print B and D, as shown in test `PrintByCout`.
-However, when two object of `class D` is compared using `EXPECT_EQ`, it just
-print the byte data instead of using `operator<<` for `class B`.
-
-Only when `operator<<` for `class D` is defined `class D` objects are properly
-printed.
-
-The code for testing is shown as follows, along with the execution result.
-Tested on v1.8.0/v1.8.1/1.8.x/master, with the same result.
+示例代码如下：
 
 ```
 #include <iostream>
@@ -71,7 +57,7 @@ TEST(Print, PrintD) {
   EXPECT_EQ(obj1, obj2);
 }
 ```
-output :
+执行结果:
 ```
 Running main() from ./googletest/googletest/src/gtest_main.cc
 [==========] Running 3 tests from 1 test case.
@@ -153,3 +139,6 @@ std::ostream& operator<<(std::ostream& os, const T& b) {
     * 如果同样好的函数中只有一个是非模板函数，则选择此函数。
     * 如果同样好的函数中没有非模板函数，而有多个函数模板，且其中一个比其他模板更特例化，则选择此模板。
     * 否则，此调用有歧义。
+
+
+原创文章，转载请注明出处(https://alancprc.github.io/c++/2019/09/02/google-test-print-derived-class-object.html)
