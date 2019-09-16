@@ -7,6 +7,7 @@ categories: c++
 在Unison中使用google test时，发现EXPECT_EQ在fail时，不能打印Unison Test Language中定义的派生类的对象。于是写了个纯C++的示例，发现在只定义基类的`operator<<`时，无法打印派生类对象。
 
 于是在github上给googletest提交了一个issue[Unable to print derived class while `operator<<` for base class defined #2435](https://github.com/google/googletest/issues/2435)。
+
 示例代码如下：
 
 ```
@@ -141,4 +142,4 @@ std::ostream& operator<<(std::ostream& os, const T& b) {
     * 否则，此调用有歧义。
 
 
-原创文章，转载请注明出处(https://alancprc.github.io/c++/2019/09/02/google-test-print-derived-class-object.html)
+原创文章，转载请注明出处<https://alancprc.github.io/c++/2019/09/02/google-test-print-derived-class-object.html>
