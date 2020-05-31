@@ -1,7 +1,8 @@
 ---
 layout:     post
 title:      testing in Unison with googletest
-categories: Unison, googletest
+categories: c++
+tags:       Unison googletest
 ---
 
 * 目录
